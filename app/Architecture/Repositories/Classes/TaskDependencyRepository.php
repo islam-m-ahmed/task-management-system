@@ -41,6 +41,45 @@ class TaskDependencyRepository extends AbstractRepository implements ITaskDepend
             ->exists();
     }
 
+    /**
+     * Check if adding a dependency would create a circular reference
+     * Uses BFS to traverse the full dependency chain at any depth
+     */
+    public function hasCircularDependency(int $taskId, int $dependsOnTaskId): bool
+    {
+        $visited = [];
+        $queue = [$dependsOnTaskId];
+
+        while (!empty($queue)) {
+            $currentTaskId = array_shift($queue);
+
+            // If we reached the original task, it's a circular dependency
+            if ($currentTaskId === $taskId) {
+                return true;
+            }
+
+            // Skip already visited tasks to avoid infinite loops
+            if (in_array($currentTaskId, $visited)) {
+                continue;
+            }
+
+            $visited[] = $currentTaskId;
+
+            // Get all tasks that $currentTaskId depends on
+            $dependencies = $this->prepareQuery()
+                ->where('task_id', $currentTaskId)
+                ->pluck('depends_on_task_id')
+                ->toArray();
+
+            foreach ($dependencies as $depId) {
+                if (!in_array($depId, $visited)) {
+                    $queue[] = $depId;
+                }
+            }
+        }
+
+        return false;
+    }
 
     /**
      * Check if a task has any incomplete dependencies

@@ -15,11 +15,10 @@ use Symfony\Component\HttpFoundation\Response;
 class TaskService implements ITaskService
 {
     public function __construct(
-        private readonly ITaskRepository           $taskRepository,
+        private readonly ITaskRepository $taskRepository,
         private readonly ITaskDependencyRepository $taskDependencyRepository,
-        private readonly IApiHttpResponder         $responder
-    )
-    {
+        private readonly IApiHttpResponder $responder
+    ) {
     }
 
     public function getAllTasks(array $filters): JsonResponse
@@ -180,6 +179,10 @@ class TaskService implements ITaskService
 
             if ($this->taskDependencyRepository->dependencyExists($taskId, $dependsOnTaskId)) {
                 return $this->responder->sendError('This dependency relationship already exists', Response::HTTP_CONFLICT);
+            }
+
+            if ($this->taskDependencyRepository->hasCircularDependency($taskId, $dependsOnTaskId)) {
+                return $this->responder->sendError('Cannot add dependency: circular dependency detected', Response::HTTP_UNPROCESSABLE_ENTITY);
             }
 
             $this->taskDependencyRepository->addDependency($taskId, $dependsOnTaskId);

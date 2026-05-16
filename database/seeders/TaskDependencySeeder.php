@@ -13,11 +13,10 @@ class TaskDependencySeeder extends Seeder
     public function run(): void
     {
         $dependencies = [
-            ['task_id' => 3, 'depends_on_task_id' => 1],
-            ['task_id' => 3, 'depends_on_task_id' => 2],
-            ['task_id' => 4, 'depends_on_task_id' => 3],
-            ['task_id' => 5, 'depends_on_task_id' => 4],
-            ['task_id' => 6, 'depends_on_task_id' => 4],
+            ['task_id' => 5, 'depends_on_task_id' => 6],
+            ['task_id' => 6, 'depends_on_task_id' => 3],
+            ['task_id' => 6, 'depends_on_task_id' => 2],
+            ['task_id' => 6, 'depends_on_task_id' => 1],
         ];
 
         foreach ($dependencies as $dep) {

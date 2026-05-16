@@ -8,5 +8,7 @@ interface ITaskDependencyRepository extends IAbstractRepository
 
     public function dependencyExists(int $taskId, int $dependsOnTaskId): bool;
 
+    public function hasCircularDependency(int $taskId, int $dependsOnTaskId): bool;
+
     public function hasIncompleteDependencies(int $taskId): bool;
 }

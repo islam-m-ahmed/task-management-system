@@ -28,7 +28,6 @@ class AuthService implements IAuthService
             }
 
             $user->tokens()->delete();
-            // Create token with ability to access everything, relying on Spatie for restrictions
             $token = $user->createToken('auth_token')->plainTextToken;
 
             return $this->responder->sendSuccess([
